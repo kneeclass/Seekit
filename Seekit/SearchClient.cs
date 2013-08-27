@@ -6,6 +6,7 @@ using System.Text;
 using Newtonsoft.Json;
 using Seekit.Connection;
 using Seekit.Linq;
+using Seekit.Settings;
 
 namespace Seekit {
     public class SearchClient<T> where T : SearchModelBase {
@@ -29,9 +30,12 @@ namespace Seekit {
             var expressionConverter = new ExpressionToQuery();
             var queryModel = expressionConverter.Convert(_query, typeof (T), ConvertedExpressions);
 
-            queryModel.Client = "d065b8fc-2930-417c-9a8c-19df62a7bb9a";
+            var configuration = SeekitConfiguration.GetConfiguration();
+            queryModel.Client = configuration.ClientGuid.ToString();
+
+
             var requester = new SearchOperations();
-            var jsonData = requester.PreformSearch(JsonConvert.SerializeObject(queryModel));
+            var jsonData = requester.PreformSearch(JsonConvert.SerializeObject(queryModel), configuration);
             return JsonConvert.DeserializeObject<SearchResult<T>>(jsonData);
         }
 

@@ -1,14 +1,16 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Net;
+using Seekit.Settings;
 
 namespace Seekit.Connection {
     public class SearchOperations {
 
-        public string PreformSearch(string data)
+        public string PreformSearch(string data, SeekitConfiguration configuration)
         {
             StreamWriter requestWriter;
             string retval = string.Empty;
-            var webRequest = WebRequest.Create("http://127.0.0.1:81/api/search") as HttpWebRequest;
+            var webRequest = WebRequest.Create(new Uri(configuration.ApiUrl, "search")) as HttpWebRequest;
             if (webRequest != null) {
                 webRequest.Method = "POST";
                 webRequest.Timeout = 20000;

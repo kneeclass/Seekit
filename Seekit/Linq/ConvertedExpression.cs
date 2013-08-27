@@ -4,7 +4,7 @@ using Newtonsoft.Json.Converters;
 namespace Seekit.Linq {
     public class ConvertedExpression {
 
-        public string Condition { get; set; }
+        public string Operator { get; set; }
         [JsonConverter(typeof(StringEnumConverter))]
         public SubQuery? SubQuery { get; set; }
         public string Target { get; set; }

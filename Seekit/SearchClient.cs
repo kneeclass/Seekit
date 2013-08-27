@@ -19,7 +19,7 @@ namespace Seekit {
 
         public SearchClient<T> Where(Expression<Func<T, object>> expression) {
             var parser = new ExpressionParser<T>();
-            var conExpressions = parser.Parse(expression);
+            var conExpressions = parser.Parse(expression.Body);
             ConvertedExpressions.AddRange(conExpressions);
             return this;
         }
@@ -32,7 +32,6 @@ namespace Seekit {
             queryModel.Client = "d065b8fc-2930-417c-9a8c-19df62a7bb9a";
             var requester = new SearchOperations();
             var jsonData = requester.PreformSearch(JsonConvert.SerializeObject(queryModel));
-            jsonData = jsonData.Replace("created", "created2");
             return JsonConvert.DeserializeObject<SearchResult<T>>(jsonData);
         }
 

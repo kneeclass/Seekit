@@ -58,6 +58,7 @@
     <Compile Include="Linq\Evaluator.cs" />
     <Compile Include="Linq\ExpressionParser.cs" />
     <Compile Include="Linq\ExpressionToQuery.cs" />
+    <Compile Include="Linq\SubQueryContextManager.cs" />
     <Compile Include="QueryExtensions.cs" />
     <Compile Include="SearchClient.cs" />
     <Compile Include="Web\UI\MarkupGenerator.cs" />

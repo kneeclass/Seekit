@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Seekit.Connection;
 
 namespace Seekit.Linq {
@@ -21,49 +20,65 @@ namespace Seekit.Linq {
 
         private static void RewriteCondition(IEnumerable<ConvertedExpression> convertedExpressions) {
             foreach (var convertedExpression in convertedExpressions) {
-                switch (convertedExpression.Condition)
+                switch (convertedExpression.Operator)
                 {
                     case "OrElse":
-                        convertedExpression.Condition = "OR";
+                        convertedExpression.Operator = "OR";
                         continue;
                     case "AndAlso":
                     case null:
-                        convertedExpression.Condition = "AND";
+                        convertedExpression.Operator = "AND";
                         continue;
                 }
-
-
+            }
+            if (convertedExpressions.Any()){
+                convertedExpressions.First().Operator = null;
             }
 
         }
         private static void RewriteEquality(IEnumerable<ConvertedExpression> convertedExpressions) {
             foreach (var convertedExpression in convertedExpressions) {
-                switch (convertedExpression.Equality) {
-                    case "NotEqual":
-                        convertedExpression.Equality = "NEQ";
+                var equality = convertedExpression.Equality;
+                convertedExpression.Equality = string.Empty;
+
+                if (equality.StartsWith("Not")) {
+                    convertedExpression.Equality = "N:";
+                    equality = equality.TrimStart("Not".ToCharArray());
+                }
+
+                foreach (var method in SubQueryContextManager.SupportedMethods) {
+                    if(equality.StartsWith(method)) {
+                        equality = equality.TrimStart(method.ToCharArray());
                         break;
+                    }
+                }
+
+                switch (equality) {
                     case "Equal":
-                        convertedExpression.Equality = "EQ";
+                    case "Equals":
+                    case "Contains":
+                        convertedExpression.Equality += "EQ";
                         break;
                     case "GreaterThan":
-                        convertedExpression.Equality = "GT";
+                        convertedExpression.Equality += "GT";
                         break;
                     case "GreaterThanOrEqual":
-                        convertedExpression.Equality = "GTOEQ";
+                        convertedExpression.Equality += "GTOEQ";
                         break;
                     case "LessThan":
-                        convertedExpression.Equality = "LT";
+                        convertedExpression.Equality += "LT";
                         break;
                     case "LessThanOrEqual":
-                        convertedExpression.Equality = "LTOEQ";
+                        convertedExpression.Equality += "LTOEQ";
                         break;
                     case "StartsWith":
-                        convertedExpression.Equality = "SW";
+                        convertedExpression.Equality += "SW";
                         break;
                     case "EndsWith":
-                        convertedExpression.Equality = "EW";
+                        convertedExpression.Equality += "EW";
                         break;
                     default:
+                        convertedExpression.Equality += equality;
                         break;
                 }
             }

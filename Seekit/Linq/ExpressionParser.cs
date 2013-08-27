@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
@@ -6,27 +7,32 @@ namespace Seekit.Linq {
     public class ExpressionParser<T> : ExpressionVisitor {
         private readonly Queue<string> _conditionalQueue;
         private ConvertedExpression _currentExpression;
+        private SubQueryContextManager _subQueryContext;
         private readonly List<ConvertedExpression> _expressions;
-        private string _baseExpression = string.Empty;
 
 
         public List<ConvertedExpression> Parse(Expression expression) {
             var e = Evaluator.PartialEval(expression);
             Visit(e);
+
+            _subQueryContext.RemoveUnwantedSubQuerys(_expressions);
+
             return _expressions;
         }
 
-        private ConvertedExpression GetCurrentExpression() {
-            if (_currentExpression == null) {
-                _currentExpression = new ConvertedExpression();
-            }
-            return _currentExpression;
+        private ConvertedExpression GetCurrentExpression()
+        {
+            return _currentExpression ?? (_currentExpression = new ConvertedExpression());
         }
+
         private void FinalizeCurrentExpression() {
 
             if (_expressions.Any()) {
-                _currentExpression.Condition = _conditionalQueue.Dequeue();
+                _currentExpression.Operator = _conditionalQueue.Dequeue();
             }
+
+            _subQueryContext.SetContext(_currentExpression);
+
             _expressions.Add(_currentExpression);
             _currentExpression = null;
         }
@@ -35,27 +41,38 @@ namespace Seekit.Linq {
         public ExpressionParser() {
             _conditionalQueue = new Queue<string>();
             _expressions = new List<ConvertedExpression>();
+            _subQueryContext = new SubQueryContextManager();
         }
 
 
         private bool _visitUnaryVisited;
         protected override Expression VisitUnary(UnaryExpression node) {
 
-            if(!_visitUnaryVisited) {
-                _baseExpression = node.Operand.ToString();
+            if (!_visitUnaryVisited) {
+                _subQueryContext.BaseExpression = node.Operand.ToString();
                 _visitUnaryVisited = true;
             }
 
             if (node.NodeType == ExpressionType.Not) {
                 var conexpress = GetCurrentExpression();
-                conexpress.Equality += node.NodeType.ToString();
+                conexpress.Equality = node.NodeType + conexpress.Equality ?? string.Empty;
             }
             return base.VisitUnary(node);
         }
         protected override Expression VisitMethodCall(MethodCallExpression node) {
 
+            if (node.Method.DeclaringType == typeof(string) && node.Method.Name == "Contains") {
+                throw new NotSupportedException("The string method Contains is not supported by Seekit: " + node);
+            }
             var conexpress = GetCurrentExpression();
-            conexpress.Equality += node.Method.Name;
+
+            if (IsDoubleNegetate(conexpress, node.Method.Name)) {
+                conexpress.Equality = ExpressionType.Not + conexpress.Equality +
+                                              node.Method.Name.TrimStart(ExpressionType.Not.ToString().ToCharArray());
+            }
+            else {
+                conexpress.Equality += node.Method.Name;
+            }
 
             return base.VisitMethodCall(node);
         }
@@ -69,30 +86,41 @@ namespace Seekit.Linq {
                     break;
                 default:
                     var conexpress = GetCurrentExpression();
-                    conexpress.Equality += node.NodeType.ToString();
+
+                    //this happens if a subquery has a "NOTed" the method ex: !Any(x=> x != "asd")
+                    if (IsDoubleNegetate(conexpress, node.NodeType.ToString())) {
+                        //make it a double NotNot so that the SubQueryContextManager can pick this up in the Fill method
+                        conexpress.Equality = ExpressionType.Not + conexpress.Equality +
+                                              node.NodeType.ToString().TrimStart(ExpressionType.Not.ToString().ToCharArray());
+                    }
+                    else {
+                        conexpress.Equality += node.NodeType.ToString();
+                    }
                     break;
             }
 
             var strExp = node.ToString();
-
-            if (strExp != _baseExpression && strExp.StartsWith("((") && strExp.EndsWith("))")) {
-                GetCurrentExpression().SubQuery = SubQuery.Open;
+            var expression = GetCurrentExpression();
+            var equality = GetCurrentExpression().Equality;
+            if (_subQueryContext.IsSubQueryExpression(strExp, equality)) {
+                expression.SubQuery = SubQuery.Open;
+                _subQueryContext.OpenContext(expression, node);
             }
 
             var retExpression = base.VisitBinary(node);
 
-            if (strExp != _baseExpression && strExp.StartsWith("((") && strExp.EndsWith("))"))
-            {
+            if (_subQueryContext.IsSubQueryExpression(strExp, equality)) {
                 _expressions.Last().SubQuery = SubQuery.Close;
+                _subQueryContext.CloseContext(node);
             }
             return retExpression;
         }
         protected override Expression VisitConstant(ConstantExpression node) {
-            
-                var conexpress = GetCurrentExpression();
-                conexpress.Value = node.Value;
-                FinalizeCurrentExpression();
-            
+
+            var conexpress = GetCurrentExpression();
+            conexpress.Value = node.Value;
+            FinalizeCurrentExpression();
+
             return base.VisitConstant(node);
         }
         protected override Expression VisitMember(MemberExpression node) {
@@ -101,6 +129,14 @@ namespace Seekit.Linq {
                 conexpress.Target = node.Member.Name;
             }
             return base.VisitMember(node);
+        }
+
+        private static bool IsDoubleNegetate(ConvertedExpression convertedExpression, string newEquality) {
+
+            if (string.IsNullOrEmpty(convertedExpression.Equality))
+                return false;
+
+            return convertedExpression.Equality.StartsWith(ExpressionType.Not.ToString()) && newEquality.StartsWith(ExpressionType.Not.ToString());
         }
 
     }

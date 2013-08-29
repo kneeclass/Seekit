@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Seekit.Linq;
 
-namespace Seekit.Connection {
+namespace Seekit.Models {
     public class QueryModel {
         public string Query { get; set; }
         public string ModelType { get; set; }

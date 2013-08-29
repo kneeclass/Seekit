@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Seekit.Connection;
+using Seekit.Models;
 
 namespace Seekit.Linq {
     public class ExpressionToQuery

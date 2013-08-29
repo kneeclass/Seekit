@@ -46,12 +46,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Connection\Facet.cs" />
-    <Compile Include="Connection\FacetValue.cs" />
-    <Compile Include="Connection\QueryModel.cs" />
-    <Compile Include="Connection\SearchHit.cs" />
-    <Compile Include="Connection\SearchOperations.cs" />
-    <Compile Include="Connection\SearchResult.cs" />
+    <Compile Include="Connection\FacetOperation.cs" />
+    <Compile Include="FacetsClient.cs" />
+    <Compile Include="Facets\FacetContextMerger.cs" />
+    <Compile Include="Facets\FacetsCacheManager.cs" />
+    <Compile Include="Facets\FacetsResolver.cs" />
+    <Compile Include="Models\ClientBase.cs" />
+    <Compile Include="Facets\Facet.cs" />
+    <Compile Include="Facets\FacetContext.cs" />
+    <Compile Include="Facets\FacetsList.cs" />
+    <Compile Include="Facets\FacetValue.cs" />
+    <Compile Include="Models\QueryModel.cs" />
+    <Compile Include="Models\SearchHit.cs" />
+    <Compile Include="Connection\SearchOperation.cs" />
+    <Compile Include="Models\SearchResult.cs" />
     <Compile Include="Extensions\HttpContextExtensions.cs" />
     <Compile Include="FacetAttribute.cs" />
     <Compile Include="GeoLocation.cs" />
@@ -60,7 +68,7 @@
     <Compile Include="Linq\ExpressionParser.cs" />
     <Compile Include="Linq\ExpressionToQuery.cs" />
     <Compile Include="Linq\SubQueryContextManager.cs" />
-    <Compile Include="QueryExtensions.cs" />
+    <Compile Include="SeekitExtensions.cs" />
     <Compile Include="SearchClient.cs" />
     <Compile Include="Settings\SeekitConfiguration.cs" />
     <Compile Include="Web\UI\MarkupGenerator.cs" />

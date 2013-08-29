@@ -4,20 +4,22 @@ using System.Net;
 using Seekit.Settings;
 
 namespace Seekit.Connection {
-    public class SearchOperations {
+    public class FacetOperation {
 
-        public string PreformSearch(string data, SeekitConfiguration configuration)
-        {
-            StreamWriter requestWriter;
-            string retval = string.Empty;
-            var webRequest = WebRequest.Create(new Uri(configuration.ApiUrl, "search")) as HttpWebRequest;
+        public string FetchAllFacets(SeekitConfiguration configuration, string modelName) {
+
+            var retval = string.Empty;
+            var facetsApiPath = string.Format("facets/{0}", configuration.ClientGuid);
+
+            if(!string.IsNullOrEmpty(modelName)) {
+                facetsApiPath += "?model=" + modelName;
+            }
+
+            var webRequest = WebRequest.Create(new Uri(configuration.ApiUrl, facetsApiPath)) as HttpWebRequest;
             if (webRequest != null) {
-                webRequest.Method = "POST";
+                webRequest.Method = "GET";
                 webRequest.Timeout = 20000;
                 webRequest.ContentType = "application/json";
-                using (requestWriter = new StreamWriter(webRequest.GetRequestStream())) {
-                    requestWriter.Write(data);
-                }
 
                 var response = (HttpWebResponse)webRequest.GetResponse();
                 try {
@@ -30,12 +32,10 @@ namespace Seekit.Connection {
                 } finally {
                     response.Close();
                 }
-            
+
             }
             return retval;
-            
 
         }
-
     }
 }

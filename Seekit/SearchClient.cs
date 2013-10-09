@@ -10,7 +10,9 @@ using Seekit.Models;
 using Seekit.Utils;
 
 namespace Seekit {
-    public class SearchClient<T> : SearchClientBase {
+
+    public class SearchClient<T> : SearchClientBase, ISearchClient<T>
+    {
         public SearchClient(string query) : base(query)
         {
             TypeFullName = typeof (T).JsonNetFormat();
@@ -20,18 +22,18 @@ namespace Seekit {
             TypeFullName = typeof (T).JsonNetFormat();
         }
 
-        public SearchClient<T> Where(Expression<Func<T, object>> expression) {
+        public ISearchClient<T> Where(Expression<Func<T, object>> expression) {
             var parser = new ExpressionParser<T>();
             var conExpressions = parser.Parse(expression.Body);
             ConvertedExpressions.AddRange(conExpressions);
             return this;
         }
 
-        public SearchClient<T> WithinRadiusOf(Expression<Func<T, object>> expression, GeoLocation geoLocation, double km) {
+        public ISearchClient<T> WithinRadiusOf(Expression<Func<T, object>> expression, GeoLocation geoLocation, double km) {
             var propertyName = ExpressionUtils.GetPropertyName(expression);
             return WithinRadiusOf(propertyName, geoLocation, km);
         }
-        public SearchClient<T> WithinRadiusOf(string propertyName, GeoLocation geoLocation, double km) {
+        public ISearchClient<T> WithinRadiusOf(string propertyName, GeoLocation geoLocation, double km) {
 
             var tType = typeof(T);
             var property = tType.GetProperty(propertyName);
@@ -48,7 +50,7 @@ namespace Seekit {
             return this;
         }
 
-        public SearchClient<T> IncludeEmptyFacets(bool include = true) {
+        public ISearchClient<T> IncludeEmptyFacets(bool include = true) {
             IncEmptyFacets = include;
             return this;
         }
@@ -66,15 +68,17 @@ namespace Seekit {
         /// The number of items to retrive. The default value is 10
         /// </summary>
         /// <param name="count"></param>
-        public void Take(Int32 count) {
+        public ISearchClient<T> Take(Int32 count) {
             TakeCount = count;
+            return this;
         }
         /// <summary>
         /// The number of items to skip. The default value is 0
         /// </summary>
         /// <param name="count"></param>
-        public void Skip(Int32 count) {
+        public ISearchClient<T> Skip(Int32 count) {
             SkipCount = count;
+            return this;
         }
 
 

@@ -6,14 +6,16 @@ using Seekit.Settings;
 namespace Seekit.Connection {
     public class FacetOperation {
 
-        public string FetchAllFacets(SeekitConfiguration configuration, string modelName) {
+        public string FetchAllFacets(SeekitConfiguration configuration,string lang, string modelName) {
 
             var retval = string.Empty;
-            var facetsApiPath = string.Format("facets/{0}", configuration.ClientGuid);
+            var facetsApiPath = string.Format("facets?client={0}", configuration.ClientGuid);
 
-            if(!string.IsNullOrEmpty(modelName)) {
-                facetsApiPath += "?model=" + modelName;
-            }
+            if (!string.IsNullOrEmpty(modelName))
+                facetsApiPath += "&lang=" + lang;
+
+            if(!string.IsNullOrEmpty(modelName))
+                facetsApiPath += "&modeltype=" + modelName;
 
             var webRequest = WebRequest.Create(new Uri(configuration.ApiUrl, facetsApiPath)) as HttpWebRequest;
             if (webRequest != null) {

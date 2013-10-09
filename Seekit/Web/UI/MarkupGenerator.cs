@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text;
+using Seekit.Extensions;
 using Seekit.Settings;
 using Newtonsoft.Json;
 using System.Web;
@@ -48,7 +49,7 @@ namespace Seekit.Web.UI {
             var currentType = searchModel.GetType();
             var typesList = new List<string>();
             while (currentType != null && currentType.FullName != "System.Object") {
-                typesList.Add(currentType.FullName);
+                typesList.Add(currentType.JsonNetFormat());
                 currentType = currentType.BaseType;
             }
             return string.Format(Constants.SeekitMetaTagFormat,
@@ -84,7 +85,7 @@ namespace Seekit.Web.UI {
                 return HttpUtility.HtmlEncode(JsonConvert.SerializeObject(value));
             }
 
-            return value.ToString();
+            return HttpUtility.HtmlEncode(JsonConvert.SerializeObject(value));
         }
         private static string GetType(PropertyInfo propertyInfo) {
 

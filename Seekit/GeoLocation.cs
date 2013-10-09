@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace Seekit {
     public class GeoLocation {
@@ -10,14 +11,11 @@ namespace Seekit {
             Latitude = latitude;
             Longitude = longitude;
         }
-
+        [JsonProperty(PropertyName = "Lat")]
         public double Latitude { get; set; }
-        public double Longitude { get; set; }
 
-        public override string ToString()
-        {
-            return Latitude + ", " + Longitude;
-        }
+        [JsonProperty(PropertyName = "Long")]
+        public double Longitude { get; set; }
 
     }
 }

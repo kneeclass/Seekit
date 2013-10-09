@@ -1,67 +1,99 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
+using System.Data;
 using System.Linq.Expressions;
-using System.Text;
 using Newtonsoft.Json;
 using Seekit.Connection;
+using Seekit.Extensions;
 using Seekit.Facets;
 using Seekit.Linq;
 using Seekit.Models;
-using Seekit.Settings;
+using Seekit.Utils;
 
 namespace Seekit {
-    public class SearchClient<T> : ClientBase where T : SearchModelBase {
-
-        private readonly List<ConvertedExpression> _convertedExpressions = new List<ConvertedExpression>();
-        private readonly string _query;
-        private bool _includeEmptyFacets;
-        public SearchClient(string query = "")
+    public class SearchClient<T> : SearchClientBase {
+        public SearchClient(string query) : base(query)
         {
-            Configuration = SeekitConfiguration.GetConfiguration();
-            _query = query;
+            TypeFullName = typeof (T).JsonNetFormat();
+        }
+        public SearchClient(string query, string lang) : base(query, lang)
+        {
+            TypeFullName = typeof (T).JsonNetFormat();
         }
 
         public SearchClient<T> Where(Expression<Func<T, object>> expression) {
             var parser = new ExpressionParser<T>();
             var conExpressions = parser.Parse(expression.Body);
-            _convertedExpressions.AddRange(conExpressions);
+            ConvertedExpressions.AddRange(conExpressions);
+            return this;
+        }
+
+        public SearchClient<T> WithinRadiusOf(Expression<Func<T, object>> expression, GeoLocation geoLocation, double km) {
+            var propertyName = ExpressionUtils.GetPropertyName(expression);
+            return WithinRadiusOf(propertyName, geoLocation, km);
+        }
+        public SearchClient<T> WithinRadiusOf(string propertyName, GeoLocation geoLocation, double km) {
+
+            var tType = typeof(T);
+            var property = tType.GetProperty(propertyName);
+            if (property.PropertyType != typeof(GeoLocation)) {
+                throw new SyntaxErrorException("The property selected as WithinRadiusOf property is not of the type GeoLocation");
+            }
+            GeoQuery = new GeoQuery {
+                               Distance = km,
+                               Latitude = geoLocation.Latitude,
+                               Longitude = geoLocation.Longitude,
+                               PropertyName = propertyName
+                           };
+
             return this;
         }
 
         public SearchClient<T> IncludeEmptyFacets(bool include = true) {
-            _includeEmptyFacets = include;
+            IncEmptyFacets = include;
             return this;
         }
 
-        public SearchResult<T> ToList()
-        {
-            
+        public SearchResult<T> Search() {
             var requester = new SearchOperation();
-            var jsonData = requester.PreformSearch(JsonConvert.SerializeObject(ConvertExpression()), Configuration);
-            var result = JsonConvert.DeserializeObject<SearchResult<T>>(jsonData);;
-            if(_includeEmptyFacets)
-            {
-                var fcm = new FacetContextMerger<T>();
-                var facetClient = new FacetsClient();
-                var allFacets = facetClient.GetAllFacets<T>(result.CrawlStamp);
-                fcm.Merge(result.Facets, allFacets.Facets);
-            }
-            return result;
+            var jsonSerializerSettings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All };
+            var jsonData = requester.PreformSearch(JsonConvert.SerializeObject(ConvertExpression(), Formatting.None), Configuration);
+            var result = JsonConvert.DeserializeObject<SearchResultContext<T>>(jsonData,jsonSerializerSettings);;
+            MergeFacets(result.CrawlStamp,result.SearchResults[0].Facets);
+            return result.SearchResults[0];
         }
 
-        private QueryModel ConvertExpression()
-        {
-            var expressionConverter = new ExpressionToQuery();
-            var queryModel = expressionConverter.Convert(_query, typeof(T), _convertedExpressions);
-            queryModel.Client = Configuration.ClientGuid.ToString();
-            return queryModel;
+        /// <summary>
+        /// The number of items to retrive. The default value is 10
+        /// </summary>
+        /// <param name="count"></param>
+        public void Take(Int32 count) {
+            TakeCount = count;
         }
+        /// <summary>
+        /// The number of items to skip. The default value is 0
+        /// </summary>
+        /// <param name="count"></param>
+        public void Skip(Int32 count) {
+            SkipCount = count;
+        }
+
 
         public override string ToString()
         {
             return JsonConvert.SerializeObject(ConvertExpression());
 
+        }
+
+        internal override void MergeFacets<T>(string crawlStamp, FacetsList<T> facetsList, Type typeOverride = null)
+        {
+            var fcm = new FacetContextMerger<T>();
+            var facetClient = new FacetsClient();
+            var allFacets = facetClient.GetAllFacets<T>(crawlStamp, Lang ?? string.Empty, typeOverride);
+            fcm.Merge(facetsList, allFacets.Facets, IncEmptyFacets);
+        }
+        internal override Type ModelType
+        {
+            get { return typeof (T); }
         }
     }
 }

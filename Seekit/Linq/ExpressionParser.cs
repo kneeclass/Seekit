@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using Seekit.Facets;
 
 namespace Seekit.Linq {
     public class ExpressionParser<T> : ExpressionVisitor {
@@ -118,9 +119,9 @@ namespace Seekit.Linq {
         protected override Expression VisitConstant(ConstantExpression node) {
 
             var conexpress = GetCurrentExpression();
-            conexpress.Value = node.Value;
+            conexpress.Value.SetValue(node.Value);
             FinalizeCurrentExpression();
-
+            
             return base.VisitConstant(node);
         }
         protected override Expression VisitMember(MemberExpression node) {

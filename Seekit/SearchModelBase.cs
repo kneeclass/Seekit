@@ -1,7 +1,7 @@
 ﻿using System.Runtime.Serialization;
 
 namespace Seekit {
-    public abstract class SearchModelBase {
+    public class SearchModelBase {
         /// <summary>
         /// The absolute url of the page/file
         /// </summary>

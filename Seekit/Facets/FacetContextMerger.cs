@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Seekit.Facets {
     internal class FacetContextMerger<T> {
 
-        public void Merge(FacetsList<T> masterFacets, FacetsList<T> slaveFacets)
+        public void Merge(FacetsList<T> masterFacets, FacetsList<T> slaveFacets, bool includeEmptyFacets,Type type = null)
         {
             if (masterFacets == null || slaveFacets == null)
                 return;
@@ -14,10 +15,18 @@ namespace Seekit.Facets {
             foreach (var slaveFacet in slaveFacets) {
                 var master = masterFacets.Where(x => x.PropetyName == slaveFacet.PropetyName).SingleOrDefault();
 
-                if(master == null) {
-                    slavesToAdd.Add(slaveFacet.Clone() as Facet);
+                if (master == null && includeEmptyFacets) {
+                    var clone = slaveFacet.Clone();
+
+                    clone.FacetValues.ForEach(x => { 
+                        x.TotalNumbersOfHits = x.Hits;
+                        x.Hits = 0;
+                    });
+
+                    slavesToAdd.Add(clone);
+                    
                 }
-                else {
+                else if(master != null) {
 
                     foreach (var slaveFacetValue in slaveFacet.FacetValues)
                     {

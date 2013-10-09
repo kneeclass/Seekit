@@ -8,15 +8,26 @@ namespace Seekit.Linq {
     public class ExpressionToQuery
     {
 
-        public QueryModel Convert(string query, Type modelType, List<ConvertedExpression> convertedExpressions) {
-            var qm = new QueryModel();
-            qm.ModelType = modelType.FullName;
-            qm.Query = query;
+        public Query Convert(string query, string modelType, List<ConvertedExpression> convertedExpressions, string lang) {
+            var qm = new Query();
+            qm.ModelType = modelType;
+            qm.SearchTerms = query;
+            qm.Lang = lang;
 
+            RewriteValues(convertedExpressions);
             RewriteCondition(convertedExpressions);
             RewriteEquality(convertedExpressions);
             qm.Filter = convertedExpressions;
             return qm;
+        }
+
+        private void RewriteValues(List<ConvertedExpression> convertedExpressions)
+        {
+            var expressionValueConverter = new ExpressionValueConverter();
+            foreach (var convertedExpression in convertedExpressions)
+            {
+                convertedExpression.Value.JsonReturnValue = expressionValueConverter.Convert(convertedExpression);
+            }
         }
 
         private static void RewriteCondition(IEnumerable<ConvertedExpression> convertedExpressions) {
@@ -78,9 +89,12 @@ namespace Seekit.Linq {
                     case "EndsWith":
                         convertedExpression.Equality += "EW";
                         break;
-                    default:
-                        convertedExpression.Equality += equality;
+                    case "WithinRadiusOf":
+                        convertedExpression.Equality += "WRO";
                         break;
+                    default:
+                        throw new NotSupportedException(string.Format("The equality operator {0} is not supported",
+                                                                      equality));
                 }
             }
         }

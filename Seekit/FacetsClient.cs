@@ -1,6 +1,4 @@
 ﻿using System;
-using Newtonsoft.Json;
-using Seekit.Connection;
 using Seekit.Facets;
 using Seekit.Models;
 using Seekit.Settings;
@@ -12,16 +10,17 @@ namespace Seekit {
             Configuration = SeekitConfiguration.GetConfiguration();
         }
 
-        public FacetContext<object> GetAllFacets(string crawlStamp = "")
+        public FacetContext<SearchModelBase> GetAllFacets(string crawlStamp = "", string lang = "")
         {
-            var resolver = new FacetsResolver<object>(Configuration);
-            return resolver.Get(crawlStamp, null);
+            var resolver = new FacetsResolver<SearchModelBase>(Configuration);
+            return resolver.Get(crawlStamp,lang, null);
         }
 
-        public FacetContext<T> GetAllFacets<T>(string crawlStamp = "") {
+        public FacetContext<T> GetAllFacets<T>(string crawlStamp = "", string lang = "", Type typeOverride = null) {
             var resolver = new FacetsResolver<T>(Configuration);
-            return resolver.Get(crawlStamp, typeof(T));
+            return resolver.Get(crawlStamp, lang, typeOverride ?? typeof(T));
         }
+
 
 
         

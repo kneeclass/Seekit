@@ -84,21 +84,25 @@ namespace Seekit {
 
         public IOrderedSearchClient<T> OrderBy(Expression<Func<T, object>> expression)
         {
-            return new OrderedSearchClient<T>(this);
+            var propertyName = ExpressionUtils.GetPropertyName(expression);
+            return OrderBy(propertyName);
         }
 
         public IOrderedSearchClient<T> OrderBy(string propertyName)
         {
+            ((ISearchClient)this).SortOrders.Add(new SortOrder{PropertyName = propertyName, Order = Order.Ascending});
             return new OrderedSearchClient<T>(this);
         }
 
         public IOrderedSearchClient<T> OrderByDescending(Expression<Func<T, object>> expression)
         {
-            return new OrderedSearchClient<T>(this);
+            var propertyName = ExpressionUtils.GetPropertyName(expression);
+            return OrderByDescending(propertyName);
         }
 
         public IOrderedSearchClient<T> OrderByDescending(string propertyName)
         {
+            ((ISearchClient)this).SortOrders.Add(new SortOrder { PropertyName = propertyName, Order = Order.Descending });
             return new OrderedSearchClient<T>(this);
         }
 

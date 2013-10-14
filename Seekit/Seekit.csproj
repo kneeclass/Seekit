@@ -61,6 +61,8 @@
     <Compile Include="Facets\FacetsList.cs" />
     <Compile Include="Facets\FacetValue.cs" />
     <Compile Include="Models\GeoQuery.cs" />
+    <Compile Include="Models\IOrderedSearchClient.cs" />
+    <Compile Include="Models\ISearchClient.cs" />
     <Compile Include="Models\QueryContext.cs" />
     <Compile Include="Models\Query.cs" />
     <Compile Include="Models\SearchClientBase.cs" />
@@ -76,6 +78,7 @@
     <Compile Include="Linq\ExpressionToQuery.cs" />
     <Compile Include="Linq\SubQueryContextManager.cs" />
     <Compile Include="Models\SearchResultContext.cs" />
+    <Compile Include="Models\SortOrder.cs" />
     <Compile Include="MultiSearch.cs" />
     <Compile Include="SeekitExtensions.cs" />
     <Compile Include="SearchClient.cs" />

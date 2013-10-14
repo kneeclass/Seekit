@@ -28,7 +28,7 @@ namespace Seekit {
 
 
         public static SearchResult<T> ResultFrom<T>(this SearchResultContext<SearchModelBase> searchResultContext, SearchClient<T> searchClient) where T : SearchModelBase {
-            var result = searchResultContext.SearchResults.Where(x => x.QueryId == searchClient.Query.QueryId).SingleOrDefault();
+            var result = searchResultContext.SearchResults.Where(x => x.QueryId == ((ISearchClient<T>)searchClient).Query.QueryId).SingleOrDefault();
             if (result == null)
                 return null;
 

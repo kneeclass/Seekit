@@ -8,11 +8,8 @@ namespace Seekit.Linq {
     public class ExpressionToQuery
     {
 
-        public Query Convert(string query, string modelType, List<ConvertedExpression> convertedExpressions, string lang) {
-            var qm = new Query();
-            qm.ModelType = modelType;
-            qm.SearchTerms = query;
-            qm.Lang = lang;
+        public Query Convert(string modelType, List<ConvertedExpression> convertedExpressions) {
+            var qm = new Query {ModelType = modelType};
 
             RewriteValues(convertedExpressions);
             RewriteCondition(convertedExpressions);
@@ -21,7 +18,7 @@ namespace Seekit.Linq {
             return qm;
         }
 
-        private void RewriteValues(List<ConvertedExpression> convertedExpressions)
+        private static void RewriteValues(IEnumerable<ConvertedExpression> convertedExpressions)
         {
             var expressionValueConverter = new ExpressionValueConverter();
             foreach (var convertedExpression in convertedExpressions)

@@ -12,6 +12,7 @@ namespace Seekit.Models {
         public Int32 QueryId { get; set; }
         public GeoQuery GeoQuery { get; set; }
         public List<ConvertedExpression> Filter { get; set; }
+        public List<SortOrder> SortOrders { get; set; }
     }
 
 }

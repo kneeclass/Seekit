@@ -51,7 +51,7 @@ namespace Seekit {
         }
 
         public ISearchClient<T> IncludeEmptyFacets(bool include = true) {
-            IncEmptyFacets = include;
+            ((ISearchClient<T>)this).IncEmptyFacets = include;
             return this;
         }
 
@@ -60,7 +60,8 @@ namespace Seekit {
             var jsonSerializerSettings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All };
             var jsonData = requester.PreformSearch(JsonConvert.SerializeObject(ConvertExpression(), Formatting.None), Configuration);
             var result = JsonConvert.DeserializeObject<SearchResultContext<T>>(jsonData,jsonSerializerSettings);;
-            MergeFacets(result.CrawlStamp,result.SearchResults[0].Facets);
+            var fcm = new FacetContextMerger<T>();
+            fcm.MergeFacets(result.CrawlStamp, result.SearchResults[0].Facets, ((ISearchClient<T>)this).IncEmptyFacets, ((ISearchClient<T>)this).Lang);
             return result.SearchResults[0];
         }
 
@@ -81,6 +82,26 @@ namespace Seekit {
             return this;
         }
 
+        public IOrderedSearchClient<T> OrderBy(Expression<Func<T, object>> expression)
+        {
+            return new OrderedSearchClient<T>(this);
+        }
+
+        public IOrderedSearchClient<T> OrderBy(string propertyName)
+        {
+            return new OrderedSearchClient<T>(this);
+        }
+
+        public IOrderedSearchClient<T> OrderByDescending(Expression<Func<T, object>> expression)
+        {
+            return new OrderedSearchClient<T>(this);
+        }
+
+        public IOrderedSearchClient<T> OrderByDescending(string propertyName)
+        {
+            return new OrderedSearchClient<T>(this);
+        }
+
 
         public override string ToString()
         {
@@ -88,16 +109,5 @@ namespace Seekit {
 
         }
 
-        internal override void MergeFacets<T>(string crawlStamp, FacetsList<T> facetsList, Type typeOverride = null)
-        {
-            var fcm = new FacetContextMerger<T>();
-            var facetClient = new FacetsClient();
-            var allFacets = facetClient.GetAllFacets<T>(crawlStamp, Lang ?? string.Empty, typeOverride);
-            fcm.Merge(facetsList, allFacets.Facets, IncEmptyFacets);
-        }
-        internal override Type ModelType
-        {
-            get { return typeof (T); }
-        }
     }
 }

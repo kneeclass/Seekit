@@ -24,7 +24,8 @@ namespace Seekit.Web.UI {
                 if(Ignore(propertyInfo)) continue;
 
                 var value = GetValue(propertyInfo, searchModel);
-                if(value == null) continue;
+                if (value == null)
+                    value = "null";
 
                 var name = GetName(propertyInfo);
 

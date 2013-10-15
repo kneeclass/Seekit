@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Seekit.Models {
+namespace Seekit.Entities {
     public class QueryContext {
         public QueryContext()
         {

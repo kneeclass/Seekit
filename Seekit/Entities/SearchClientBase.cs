@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Seekit.Linq;
 using Seekit.Settings;
 
-namespace Seekit.Models {
+namespace Seekit.Entities {
     public abstract class SearchClientBase : ClientBase, ISearchClient {
 
         protected readonly string QueryTerm;

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using Seekit.Utils;
 
-namespace Seekit.Models {
+namespace Seekit.Entities {
     public interface IOrderedSearchClient<T> : ISearchClient<T>
     {
         IOrderedSearchClient<T> ThenBy(Expression<Func<T, object>> expression);
@@ -108,11 +108,13 @@ namespace Seekit.Models {
         }
 
         public IOrderedSearchClient<T> ThenBy(string propertyName) {
+            AllowedSortTypes<T>.ThrowIfNotSortableType(propertyName);
             SortOrders.Add(new SortOrder{PropertyName = propertyName, Order = Order.Ascending});
             return this;
         }
 
         public IOrderedSearchClient<T> ThenByDescending(string propertyName) {
+            AllowedSortTypes<T>.ThrowIfNotSortableType(propertyName);
             SortOrders.Add(new SortOrder { PropertyName = propertyName, Order = Order.Descending });
             return this;
         }

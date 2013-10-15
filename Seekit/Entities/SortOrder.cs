@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace Seekit.Models {
+namespace Seekit.Entities {
     public class SortOrder {
         public string PropertyName { get; set; }
         [JsonConverter(typeof(StringEnumConverter))]

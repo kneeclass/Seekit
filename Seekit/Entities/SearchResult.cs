@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Seekit.Facets;
 
-namespace Seekit.Models {
+namespace Seekit.Entities {
     public class SearchResult<T>{
         public FacetsList<T> Facets { get; set; }
         public string Query { get; set; }

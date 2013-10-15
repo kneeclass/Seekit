@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Seekit.Linq;
 
-namespace Seekit.Models {
+namespace Seekit.Entities {
     public class Query {
         public string SearchTerms { get; set; }
         public string Lang { get; set; }

@@ -1,6 +1,6 @@
 ﻿using System;
+using Seekit.Entities;
 using Seekit.Facets;
-using Seekit.Models;
 using Seekit.Settings;
 
 namespace Seekit {

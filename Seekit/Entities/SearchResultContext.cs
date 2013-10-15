@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 
-namespace Seekit.Models {
+namespace Seekit.Entities {
     public class SearchResultContext<T> {
         public string CrawlStamp { get; set; }
         public List<SearchResult<T>> SearchResults { get; set; }

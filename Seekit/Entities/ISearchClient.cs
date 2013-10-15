@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-namespace Seekit.Models {
+
+namespace Seekit.Entities {
     public interface ISearchClient<T> : ISearchClient {
         ISearchClient<T> Where(Expression<Func<T, object>> expression);
         ISearchClient<T> WithinRadiusOf(Expression<Func<T, object>> expression, GeoLocation geoLocation, double km);

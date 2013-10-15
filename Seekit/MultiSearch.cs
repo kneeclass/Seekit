@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 using Seekit.Connection;
+using Seekit.Entities;
 using Seekit.Facets;
-using Seekit.Models;
 using Seekit.Settings;
 
 namespace Seekit {

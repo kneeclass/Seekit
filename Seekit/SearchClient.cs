@@ -3,10 +3,10 @@ using System.Data;
 using System.Linq.Expressions;
 using Newtonsoft.Json;
 using Seekit.Connection;
+using Seekit.Entities;
 using Seekit.Extensions;
 using Seekit.Facets;
 using Seekit.Linq;
-using Seekit.Models;
 using Seekit.Utils;
 
 namespace Seekit {
@@ -90,6 +90,7 @@ namespace Seekit {
 
         public IOrderedSearchClient<T> OrderBy(string propertyName)
         {
+            AllowedSortTypes<T>.ThrowIfNotSortableType(propertyName);
             ((ISearchClient)this).SortOrders.Add(new SortOrder{PropertyName = propertyName, Order = Order.Ascending});
             return new OrderedSearchClient<T>(this);
         }
@@ -102,6 +103,7 @@ namespace Seekit {
 
         public IOrderedSearchClient<T> OrderByDescending(string propertyName)
         {
+            AllowedSortTypes<T>.ThrowIfNotSortableType(propertyName);
             ((ISearchClient)this).SortOrders.Add(new SortOrder { PropertyName = propertyName, Order = Order.Descending });
             return new OrderedSearchClient<T>(this);
         }

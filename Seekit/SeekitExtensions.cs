@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Linq;
+using Seekit.Entities;
 using Seekit.Facets;
-using Seekit.Models;
 using Seekit.Utils;
 
 namespace Seekit {

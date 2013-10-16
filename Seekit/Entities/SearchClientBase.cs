@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
+using Seekit.Connection;
+using Seekit.Facets;
 using Seekit.Linq;
 using Seekit.Settings;
 
-namespace Seekit.Models {
-    public abstract class SearchClientBase : ClientBase, ISearchClient {
+namespace Seekit.Entities {
+    public abstract class SearchClientBase<T> : ClientBase, ISearchable<T> {
 
         protected readonly string QueryTerm;
         protected readonly List<ConvertedExpression> ConvertedExpressions = new List<ConvertedExpression>();
@@ -26,6 +29,17 @@ namespace Seekit.Models {
         }
         protected string TypeFullName { get; set; }
         private Query _query;
+
+        public SearchResult<T> Search() {
+            var requester = new SearchOperation();
+            var jsonSerializerSettings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All };
+            var jsonData = requester.PreformSearch(JsonConvert.SerializeObject(ConvertExpression(), Formatting.None), Configuration);
+            var result = JsonConvert.DeserializeObject<SearchResultContext<T>>(jsonData, jsonSerializerSettings);
+
+            var fcm = new FacetContextMerger<T>();
+            fcm.MergeFacets(result.CrawlStamp, result.SearchResults[0].Facets, ((ISearchClient)this).IncEmptyFacets, ((ISearchClient)this).Lang);
+            return result.SearchResults[0];
+        }
 
         Query ISearchClient.Query {
             get {
@@ -58,6 +72,10 @@ namespace Seekit.Models {
             };
             context.Querys.Add(((ISearchClient)this).Query);
             return context;
+        }
+        public override string ToString() {
+            return JsonConvert.SerializeObject(ConvertExpression());
+
         }
 
     }

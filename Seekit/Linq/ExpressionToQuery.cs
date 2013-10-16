@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Seekit.Connection;
-using Seekit.Models;
+using Seekit.Entities;
 
 namespace Seekit.Linq {
     public class ExpressionToQuery

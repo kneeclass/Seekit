@@ -1,6 +1,6 @@
 ﻿using Seekit.Settings;
 
-namespace Seekit.Models {
+namespace Seekit.Entities {
     public abstract class ClientBase {
         public SeekitConfiguration Configuration { get; set; }
     }

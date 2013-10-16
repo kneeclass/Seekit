@@ -5,11 +5,10 @@ using System.Linq;
 namespace Seekit.Facets {
     internal class FacetContextMerger<T> {
 
-        public void MergeFacets<T>(string crawlStamp, FacetsList<T> facetsList, bool incEmptyFacets, string lang, Type typeOverride = null) {
-            var fcm = new FacetContextMerger<T>();
+        public void MergeFacets(string crawlStamp, FacetsList<T> facetsList, bool incEmptyFacets, string lang, Type typeOverride = null) {
             var facetClient = new FacetsClient();
             var allFacets = facetClient.GetAllFacets<T>(crawlStamp, lang ?? string.Empty, typeOverride);
-            fcm.Merge(facetsList, allFacets.Facets, incEmptyFacets);
+            Merge(facetsList, allFacets.Facets, incEmptyFacets);
         }
 
 

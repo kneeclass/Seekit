@@ -21,11 +21,5 @@ namespace Seekit {
             return resolver.Get(crawlStamp, lang, typeOverride ?? typeof(T));
         }
 
-
-
-        
-        
-
-
     }
 }

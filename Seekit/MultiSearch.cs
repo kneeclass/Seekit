@@ -40,8 +40,8 @@ namespace Seekit {
 
             foreach (var searchResult in result.SearchResults) {
                 var client = QueryIdToClient[searchResult.QueryId];
-                var fcm = new FacetContextMerger<object>();
-                var genericType = client.GetType().GetGenericArguments()[0];
+                var fcm = new FacetContextMerger<SearchModelBase>();
+                var genericType = client.GetType().IsGenericType ? client.GetType().GetGenericArguments()[0] : null;
 
                 fcm.MergeFacets(result.CrawlStamp, searchResult.Facets, client.IncEmptyFacets, client.Lang, genericType);
             }

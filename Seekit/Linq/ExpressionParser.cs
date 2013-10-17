@@ -75,7 +75,13 @@ namespace Seekit.Linq {
                 conexpress.Equality += node.Method.Name;
             }
 
-            return base.VisitMethodCall(node);
+            var visitMethodCall = base.VisitMethodCall(node);
+            if (node.Method.DeclaringType == typeof(string) 
+                && (node.Method.Name == "IsNullOrEmpty" || node.Method.Name == "IsNullOrWhiteSpace")
+                && !string.IsNullOrEmpty(conexpress.Target)) {
+                FinalizeCurrentExpression();
+            }
+            return visitMethodCall;
         }
 
         protected override Expression VisitBinary(BinaryExpression node) {

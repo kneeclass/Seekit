@@ -89,6 +89,12 @@ namespace Seekit.Linq {
                     case "WithinRadiusOf":
                         convertedExpression.Equality += "WRO";
                         break;
+                    case "IsNullOrEmpty":
+                        convertedExpression.Equality += "INOE";
+                        break;
+                    case "IsNullOrWhiteSpace":
+                        convertedExpression.Equality += "INOWS";
+                        break;
                     default:
                         throw new NotSupportedException(string.Format("The equality operator {0} is not supported",
                                                                       equality));

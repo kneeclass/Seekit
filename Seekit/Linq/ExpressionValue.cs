@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Seekit.Linq {
     public class ExpressionValue {
@@ -15,7 +16,9 @@ namespace Seekit.Linq {
             Values.Add(value);
         }
         public override string ToString() {
-            return string.Concat(Values);
+            if(Values.Any(x=> x != null))
+                return string.Concat(Values);
+            return null;
         }
 
     }

@@ -11,13 +11,22 @@ namespace Seekit.Linq {
                 writer.WriteValue(string.Empty);
                 return;
             }
-            var returnType = expressionValue.JsonReturnValue.GetType();
-            if(returnType == typeof(string) || returnType.IsValueType) {
-                writer.WriteValue(expressionValue.JsonReturnValue);
+
+            if (expressionValue.JsonReturnValue == null) {
+                writer.WriteNull();
             }
             else {
-                serializer.Serialize(writer, expressionValue.JsonReturnValue);
+                var returnType = expressionValue.JsonReturnValue.GetType();
+                if (returnType == typeof (string) || returnType.IsValueType)
+                {
+                    writer.WriteValue(expressionValue.JsonReturnValue);
+                }
+                else
+                {
+                    serializer.Serialize(writer, expressionValue.JsonReturnValue);
+                }
             }
+
 
         }
 

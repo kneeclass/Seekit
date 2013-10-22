@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
 using Seekit.Connection;
 using Seekit.Facets;
@@ -52,7 +53,7 @@ namespace Seekit.Entities {
                 queryModel.GeoQuery = GeoQuery;
                 queryModel.Take = TakeCount.GetValueOrDefault(10);
                 queryModel.Skip = SkipCount.GetValueOrDefault(0);
-                queryModel.SortOrders = _sortOrder;
+                queryModel.SortOrders = _sortOrder.Any() ? _sortOrder : null;
                 _query = queryModel;
                 return queryModel;
             }

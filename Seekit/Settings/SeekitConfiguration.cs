@@ -15,10 +15,19 @@ namespace Seekit.Settings {
         }
 
         [ConfigurationProperty("apiUrl", IsRequired = false)]
-        public Uri ApiUrl { get { return this["apiUrl"] as Uri; }}
+        public Uri ApiUrl { 
+            get { return _uri ?? this["apiUrl"] as Uri;}
+            set { _uri = value; }
+        }
+        private Uri _uri;
 
         [ConfigurationProperty("clientGuid", IsRequired = false)]
-        public Guid ClientGuid { get { return (Guid)this["clientGuid"]; } }
+        public Guid ClientGuid { 
+            get { return _clientGuid ?? (Guid)this["clientGuid"]; }
+            set { _clientGuid = value; }
+        }
+
+        private Guid? _clientGuid;
 
     }
 }

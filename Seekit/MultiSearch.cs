@@ -23,19 +23,12 @@ namespace Seekit {
 
             SearchClients.AddRange(searchClients);
         }
-        
+
         public SearchResultContext<SearchModelBase> Search() {
-            var requester = new SearchOperation();
-            var queryContext = new QueryContext{Client = Configuration.ClientGuid.ToString()};
             
-            for(var a = 0; a < SearchClients.Count; a++) {
-                SearchClients[a].Query.QueryId = a+1;
-                QueryIdToClient.Add(SearchClients[a].Query.QueryId, SearchClients[a]);
-                queryContext.Querys.Add(SearchClients[a].Query);
-            }
 
-
-            var jsonData = requester.PreformSearch(JsonConvert.SerializeObject(queryContext, Formatting.None), Configuration);
+            var requester = new SearchOperation();
+            var jsonData = requester.PreformSearch(ConvertToRestRequest(), Configuration);
             var result = JsonConvert.DeserializeObject<SearchResultContext<SearchModelBase>>(jsonData,new JsonSerializerSettings{TypeNameHandling = TypeNameHandling.All});
 
             foreach (var searchResult in result.SearchResults) {
@@ -46,6 +39,23 @@ namespace Seekit {
                 fcm.MergeFacets(result.CrawlStamp, searchResult.Facets, client.IncEmptyFacets, client.Lang, genericType);
             }
             return result;
+        }
+
+        private string ConvertToRestRequest()
+        {
+            var queryContext = new QueryContext { Client = Configuration.ClientGuid.ToString() };
+
+            for (var a = 0; a < SearchClients.Count; a++) {
+                SearchClients[a].Query.QueryId = a + 1;
+                QueryIdToClient.Add(SearchClients[a].Query.QueryId, SearchClients[a]);
+                queryContext.Querys.Add(SearchClients[a].Query);
+            }
+            return JsonConvert.SerializeObject(queryContext, Formatting.None);
+
+        }
+
+        public override string ToString() {
+            return ConvertToRestRequest();
         }
 
     }

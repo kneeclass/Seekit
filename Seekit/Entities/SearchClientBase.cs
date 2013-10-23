@@ -34,7 +34,7 @@ namespace Seekit.Entities {
         public SearchResult<T> Search() {
             var requester = new SearchOperation();
             var jsonSerializerSettings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All };
-            var jsonData = requester.PreformSearch(JsonConvert.SerializeObject(ConvertExpression(), Formatting.None), Configuration);
+            var jsonData = requester.PreformSearch(ConvertToRestRequest(), Configuration);
             var result = JsonConvert.DeserializeObject<SearchResultContext<T>>(jsonData, jsonSerializerSettings);
 
             var fcm = new FacetContextMerger<T>();
@@ -67,16 +67,16 @@ namespace Seekit.Entities {
             get { return _sortOrder; }
         }
 
-        protected QueryContext ConvertExpression() {
+        protected string ConvertToRestRequest() {
             var context = new QueryContext {
                 Client = Configuration.ClientGuid.ToString(), 
             };
             context.Querys.Add(((ISearchClient)this).Query);
-            return context;
+            return JsonConvert.SerializeObject(context);
+            
         }
         public override string ToString() {
-            return JsonConvert.SerializeObject(ConvertExpression());
-
+            return ConvertToRestRequest();
         }
 
     }

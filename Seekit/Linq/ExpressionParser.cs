@@ -6,7 +6,7 @@ using Seekit.Facets;
 
 namespace Seekit.Linq {
     public class ExpressionParser<T> : ExpressionVisitor {
-        private readonly Queue<string> _conditionalQueue;
+        private readonly Stack<string> _conditionalQueue;
         private ConvertedExpression _currentExpression;
         private SubQueryContextManager _subQueryContext;
         private readonly List<ConvertedExpression> _expressions;
@@ -29,7 +29,7 @@ namespace Seekit.Linq {
         private void FinalizeCurrentExpression() {
 
             if (_expressions.Any()) {
-                _currentExpression.Operator = _conditionalQueue.Dequeue();
+                _currentExpression.Operator = _conditionalQueue.Pop();
             }
 
             _subQueryContext.SetContext(_currentExpression);
@@ -39,8 +39,9 @@ namespace Seekit.Linq {
         }
 
 
-        public ExpressionParser() {
-            _conditionalQueue = new Queue<string>();
+        public ExpressionParser()
+        {
+            _conditionalQueue = new Stack<string>();
             _expressions = new List<ConvertedExpression>();
             _subQueryContext = new SubQueryContextManager();
         }
@@ -89,7 +90,7 @@ namespace Seekit.Linq {
             switch (node.NodeType.ToString()) {
                 case "OrElse":
                 case "AndAlso":
-                    _conditionalQueue.Enqueue(node.NodeType.ToString());
+                    _conditionalQueue.Push(node.NodeType.ToString());
                     break;
                 default:
                     var conexpress = GetCurrentExpression();
@@ -125,7 +126,7 @@ namespace Seekit.Linq {
         protected override Expression VisitConstant(ConstantExpression node) {
 
             var conexpress = GetCurrentExpression();
-            conexpress.Value.SetValue(node.Value);
+            conexpress.Value = node.Value;
             FinalizeCurrentExpression();
             
             return base.VisitConstant(node);
@@ -134,6 +135,7 @@ namespace Seekit.Linq {
             if (node.Member.DeclaringType.UnderlyingSystemType == typeof(T)) {
                 var conexpress = GetCurrentExpression();
                 conexpress.Target = node.Member.Name;
+                conexpress.TargetType = node.Type;
             }
             return base.VisitMember(node);
         }

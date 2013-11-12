@@ -9,7 +9,7 @@ namespace Seekit.Connection {
         public string PreformSearch(string jsonData, SeekitConfiguration configuration)
         {
             StreamWriter requestWriter;
-            var retval = string.Empty;
+            var retval = string.Empty;  
             var webRequest = WebRequest.Create(new Uri(configuration.ApiUrl, "search")) as HttpWebRequest;
             if (webRequest != null) {
                 webRequest.Method = "POST";

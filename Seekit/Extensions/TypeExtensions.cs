@@ -10,5 +10,6 @@ namespace Seekit.Extensions {
             }
                 return type.FullName;
         }
+
     }
 }

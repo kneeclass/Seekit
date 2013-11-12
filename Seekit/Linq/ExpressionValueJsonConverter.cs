@@ -2,42 +2,37 @@
 using Newtonsoft.Json;
 
 namespace Seekit.Linq {
-    class ExpressionValueJsonConverter : JsonConverter {
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-        {
-
-            var expressionValue = value as ExpressionValue;
-            if (expressionValue == null){
-                writer.WriteValue(string.Empty);
-                return;
-            }
-
-            if (expressionValue.JsonReturnValue == null) {
-                writer.WriteNull();
-            }
-            else {
-                var returnType = expressionValue.JsonReturnValue.GetType();
-                if (returnType == typeof (string) || returnType.IsValueType)
-                {
-                    writer.WriteValue(expressionValue.JsonReturnValue);
-                }
-                else
-                {
-                    serializer.Serialize(writer, expressionValue.JsonReturnValue);
-                }
-            }
+    //class ExpressionValueJsonConverter : JsonConverter {
+        //public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        //{
 
 
-        }
+        //    if (value == null)
+        //    {
+        //        writer.WriteNull();
+        //    }
+        //    else
+        //    {
+        //        var returnType = value.GetType();
+        //        if (returnType == typeof (string) || returnType.IsValueType) {
+        //            writer.WriteValue(value);
+        //        }
+        //        else {
+        //            serializer.Serialize(writer, value);
+        //        }
+        //    }
 
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-        {
-            throw new NotImplementedException();
-        }
 
-        public override bool CanConvert(Type objectType)
-        {
-            return objectType == typeof (ExpressionValue);
-        }
-    }
+        //}
+
+        //public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        //{
+        //    throw new NotImplementedException();
+        //}
+
+        //public override bool CanConvert(Type objectType)
+        //{
+        //    return objectType == typeof (ExpressionValue);
+        //}
+    //}
 }

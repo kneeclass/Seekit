@@ -3,6 +3,7 @@ using System.Collections;
 using System.Data;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Remoting.Messaging;
 using System.Runtime.Serialization;
 using System.Text;
 using Seekit.Extensions;
@@ -81,6 +82,10 @@ namespace Seekit.Web.UI {
             if(value is string) {
                 return HttpUtility.HtmlEncode(value);
             }
+            if (value is Enum)
+            {
+                return value.ToString();
+            }
 
             if (typeof(IEnumerable).IsAssignableFrom(propertyInfo.PropertyType)){
                 return HttpUtility.HtmlEncode(JsonConvert.SerializeObject(value));
@@ -91,8 +96,23 @@ namespace Seekit.Web.UI {
         private static string GetType(PropertyInfo propertyInfo) {
 
             if (typeof(IEnumerable).IsAssignableFrom(propertyInfo.PropertyType) && propertyInfo.PropertyType != typeof(string)) {
-                return "IEnumerable";
+                return typeof(IEnumerable).Name;
             }
+
+            if (propertyInfo.PropertyType.IsEnum) {
+                return typeof (string).Name;
+            }
+
+            if (propertyInfo.PropertyType.IsGenericType &&
+                propertyInfo.PropertyType.GetGenericTypeDefinition() == typeof (Nullable<>)) {
+                    if (!propertyInfo.PropertyType.GetGenericArguments().Any())
+                        throw new NullReferenceException("Missing nullable type");
+                    var genericType = propertyInfo.PropertyType.GetGenericArguments()[0];
+                    return genericType.IsEnum
+                        ? typeof (string).Name
+                        : genericType.Name;
+                }
+
 
             return propertyInfo.PropertyType.Name;
         }

@@ -56,16 +56,21 @@ namespace Seekit.Linq {
 
         }
 
-        internal void RemoveUnwantedSubQuerys(List<ConvertedExpression> expressions) {
-            var subGroups = expressions.Where(x => x.SubQuery != null).GroupBy(x => x.SubQuery);
-            if (subGroups.Count() == 0)
+        internal void RemoveUnwantedSubQuerys(List<ConvertedExpression> expressions)
+        {
+
+
+            var subGroups = expressions.Where(x => x.SubQuery != null).GroupBy(x => x.SubQuery).ToList();
+            if (subGroups.Any())
                 return;
 
-            if (subGroups.Count() == 1 || expressions.Count == 2) {
+            if (subGroups.Count() == 1 || expressions.Count == 2)
+            {
                 expressions.ForEach(x => x.SubQuery = null);
             }
 
-            if (subGroups.Count() == 2 && subGroups.First().Count() != subGroups.Last().Count()) {
+            if (subGroups.Count() == 2 && subGroups.First().Count() != subGroups.Last().Count())
+            {
                 expressions.First().SubQuery = null;
             }
         }

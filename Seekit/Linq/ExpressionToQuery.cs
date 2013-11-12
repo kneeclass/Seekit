@@ -8,13 +8,16 @@ namespace Seekit.Linq {
     public class ExpressionToQuery
     {
 
-        public Query Convert(string modelType, List<ConvertedExpression> convertedExpressions) {
+        public Query Convert(string modelType, List<ConvertedExpression> iexpressionParts)
+        {
             var qm = new Query {ModelType = modelType};
+
+            var convertedExpressions = iexpressionParts.Where(x => x is ConvertedExpression).Cast<ConvertedExpression>().ToList();
 
             RewriteValues(convertedExpressions);
             RewriteCondition(convertedExpressions);
             RewriteEquality(convertedExpressions);
-            qm.Filter = convertedExpressions;
+            qm.Filter = iexpressionParts;
             return qm;
         }
 
@@ -23,7 +26,7 @@ namespace Seekit.Linq {
             var expressionValueConverter = new ExpressionValueConverter();
             foreach (var convertedExpression in convertedExpressions)
             {
-                convertedExpression.Value.JsonReturnValue = expressionValueConverter.Convert(convertedExpression);
+                convertedExpression.Value = expressionValueConverter.Convert(convertedExpression);
             }
         }
 

@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Seekit.Facets;
 
@@ -6,7 +7,7 @@ namespace Seekit.Linq {
     public class ConvertedExpression {
 
         public ConvertedExpression() {
-            Value = new ExpressionValue();
+            //Value = new ExpressionValue();
         }
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string Operator { get; set; }
@@ -19,9 +20,11 @@ namespace Seekit.Linq {
 
         public string Equality { get; set; }
 
-        [JsonConverter(typeof(ExpressionValueJsonConverter))]
-        public ExpressionValue Value { get; set; }
+        //[JsonConverter(typeof(ExpressionValueJsonConverter))]
+        public object Value { get; set; }
 
+        [JsonIgnore]
+        public Type TargetType { get; set; }
     }
     public enum SubQuery
     {

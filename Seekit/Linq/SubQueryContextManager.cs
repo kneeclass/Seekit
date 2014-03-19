@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using Seekit.Entities;
 
 namespace Seekit.Linq {
     public class SubQueryContextManager {

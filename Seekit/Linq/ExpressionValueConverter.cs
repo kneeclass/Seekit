@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Linq;
+using Seekit.Entities;
 
 namespace Seekit.Linq {
     internal class ExpressionValueConverter {

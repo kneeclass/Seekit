@@ -8,16 +8,16 @@ namespace Seekit.Linq {
     public class ExpressionToQuery
     {
 
-        public Query Convert(string modelType, List<ConvertedExpression> iexpressionParts)
+        public Query Convert(string modelType, List<IQueryPart> queryParts)
         {
             var qm = new Query {ModelType = modelType};
 
-            var convertedExpressions = iexpressionParts.Where(x => x is ConvertedExpression).Cast<ConvertedExpression>().ToList();
-
+            var convertedExpressions = queryParts.Where(x => x is ConvertedExpression).Cast<ConvertedExpression>().ToList();
+            var operators = queryParts.Where(x => x is AndOrOperator).Cast<AndOrOperator>().ToList();
             RewriteValues(convertedExpressions);
-            RewriteCondition(convertedExpressions);
+            RewriteCondition(operators);
             RewriteEquality(convertedExpressions);
-            qm.Filter = iexpressionParts;
+            qm.Filter = queryParts;
             return qm;
         }
 
@@ -30,8 +30,10 @@ namespace Seekit.Linq {
             }
         }
 
-        private static void RewriteCondition(IEnumerable<ConvertedExpression> convertedExpressions) {
-            foreach (var convertedExpression in convertedExpressions) {
+        private static void RewriteCondition(IEnumerable<AndOrOperator> andOrOperator)
+        {
+            foreach (var convertedExpression in andOrOperator)
+            {
                 switch (convertedExpression.Operator)
                 {
                     case "OrElse":
@@ -43,12 +45,9 @@ namespace Seekit.Linq {
                         continue;
                 }
             }
-            if (convertedExpressions.Any()){
-                convertedExpressions.First().Operator = null;
-            }
-
         }
-        private static void RewriteEquality(IEnumerable<ConvertedExpression> convertedExpressions) {
+        private static void RewriteEquality(IEnumerable<ConvertedExpression> convertedExpressions)
+        {
             foreach (var convertedExpression in convertedExpressions) {
                 var equality = convertedExpression.Equality;
                 convertedExpression.Equality = string.Empty;

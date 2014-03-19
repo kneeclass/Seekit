@@ -47,6 +47,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Connection\FacetOperation.cs" />
+    <Compile Include="Entities\IQueryPart.cs" />
+    <Compile Include="Entities\QueryParts\AndOrOperator.cs" />
+    <Compile Include="Entities\QueryParts\SubQueryPart.cs" />
     <Compile Include="Extensions\TypeExtensions.cs" />
     <Compile Include="FacetsClient.cs" />
     <Compile Include="Linq\ExpressionValue.cs" />
@@ -55,7 +58,7 @@
     <Compile Include="Facets\FacetsResolver.cs" />
     <Compile Include="Linq\ExpressionValueConverter.cs" />
     <Compile Include="Linq\ExpressionValueJsonConverter.cs" />
-    <Compile Include="Entities\ClientBase.cs" />
+    <Compile Include="ClientBase.cs" />
     <Compile Include="Facets\Facet.cs" />
     <Compile Include="Facets\FacetContext.cs" />
     <Compile Include="Facets\FacetsList.cs" />
@@ -65,17 +68,20 @@
     <Compile Include="Entities\ISearchClient.cs" />
     <Compile Include="Entities\QueryContext.cs" />
     <Compile Include="Entities\Query.cs" />
-    <Compile Include="Entities\SearchClientBase.cs" />
+    <Compile Include="Linq\IExpressionParser.cs" />
+    <Compile Include="SearchClientBase.cs" />
     <Compile Include="Entities\SearchHit.cs" />
     <Compile Include="Connection\SearchOperation.cs" />
     <Compile Include="Entities\SearchResult.cs" />
     <Compile Include="Extensions\HttpContextExtensions.cs" />
     <Compile Include="FacetAttribute.cs" />
     <Compile Include="GeoLocation.cs" />
-    <Compile Include="Linq\ConvertedExpression.cs" />
+    <Compile Include="Entities\QueryParts\ConvertedExpression.cs" />
     <Compile Include="Linq\Evaluator.cs" />
     <Compile Include="Linq\ExpressionParser.cs" />
     <Compile Include="Linq\ExpressionToQuery.cs" />
+    <Compile Include="Linq\ExpressionVisitorParser.cs" />
+    <Compile Include="Linq\ExpressionVisitorValueExtractor.cs" />
     <Compile Include="Linq\SubQueryContextManager.cs" />
     <Compile Include="Entities\SearchResultContext.cs" />
     <Compile Include="Entities\SortOrder.cs" />

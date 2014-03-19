@@ -19,7 +19,7 @@ namespace Seekit {
         }
 
         public ISearchClient<T> Where(Expression<Func<T, object>> expression) {
-            var parser = new ExpressionParser<T>();
+            var parser = new ExpressionVisitorParser<T>();
             var conExpressions = parser.Parse(expression.Body);
             ConvertedExpressions.AddRange(conExpressions);
             return this;

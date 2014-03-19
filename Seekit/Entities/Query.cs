@@ -23,7 +23,7 @@ namespace Seekit.Entities {
         public GeoQuery GeoQuery { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public List<ConvertedExpression> Filter { get; set; }
+        public List<IQueryPart> Filter { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public List<SortOrder> SortOrders { get; set; }
